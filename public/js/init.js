@@ -1,9 +1,3 @@
-/*
-	Drift by Pixelarity
-	pixelarity.com @pixelarity
-	License: pixelarity.com/license
-*/
-
 (function($) {
 
 	skel.init({
@@ -155,3 +149,42 @@
 	});
 
 })(jQuery);
+var testAjax = null;
+function runTest(){
+	if(testAjax==null) {
+        $('#results_container').slideUp();
+        $('#run_test').html('Running...');
+        testAjax = $.ajax({
+            url: "api.php",
+            type:"POST",
+            dataType: "json",
+            data: {action: "get_report", url: $('#test_url').val()},
+            success: function (data) {
+                $('#run_test').html('Run Test');
+                testAjax = null;
+                if(typeof data.error!=="undefined"){
+                	showError(data.error);
+				}
+				if(typeof data.rates!=="undefined"){
+                	$('#test_res_container').empty();
+                	for(var i=0;i<data.rates.length;i++){
+                		var box = '';
+                		if(data.rates[i].price>0){
+                			box = '<input type="checkbox" name="'+data.rates[i].key+'" value="'+data.rates[i].price+'" id="'+data.rates[i].key+'" checked><label style="margin-bottom: 0px;" for="'+data.rates[i].key+'">'+data.rates[i].price+data.rates[i].currency+'$</label>';
+						}
+                		var option = '<tr><td>'+data.rates[i].name+'</td><td>'+data.rates[i].status+'</td><td>'+data.rates[i].comment+'</td><td>'+box+'</td> </tr>';
+                        $('#test_res_container').append(option);
+					}
+					$('#results_container').slideDown();
+				}
+            },
+            error: function () {
+                $('#run_test').html('Run Test');
+                testAjax = null;
+            }
+        });
+    }
+}
+function showError(msg) {
+	alert(msg);
+}

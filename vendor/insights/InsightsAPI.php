@@ -57,6 +57,57 @@ class InsightsAPI
             return FALSE;
         }
     }
+    public function toObject(){
+        $output = array();
+        if($this->results!==FALSE){
+            $output[] = $this->getParamInfo("Desktop Total Requests Count",$this->results['general']['resourcesCount'],100,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop Static Resources",$this->results['general']['staticResourcesCount'],100,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop JS Resources",$this->results['general']['jsResourcesCount'],10,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop CSS Resources",$this->results['general']['cssResourcesCount'],10,"decrease required",3.25,"$");
+
+            $output[] = $this->getParamInfo("Desktop Page Weight",$this->results['general']['totalBytes'],5*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop HTML Weight",$this->results['general']['htmlBytes'],0.5*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop CSS Weight",$this->results['general']['cssBytes'],0.5*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop JS Weight",$this->results['general']['jsBytes'],0.5*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("DImages Weight",$this->results['general']['imageBytes'],3*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop Other Content Weight",$this->results['general']['otherBytes'],0.5*1024*1024,"decrease required",3.25,"$");
+            foreach($this->results['rules']['ok'] as $key=>$info){
+                $output[]=array('key'=>'Desktop'.str_replace(' ','',$info['desc']),'name'=>$info['desc'],'price'=>0,'currency'=>'$','comment'=>'-','status'=>'OK');
+            }
+            foreach($this->results['rules']['failed'] as $key=>$info){
+                $output[]=array('key'=>'Desktop'.str_replace(' ','',$info['desc']),'name'=>$info['desc'],'price'=>4.1,'currency'=>'$','comment'=>'decrease required','status'=>'FAILED');
+            }
+
+        }
+        if($this->resultsMobile!==FALSE){
+            $output[] = $this->getParamInfo("Mobile Total Requests Count",$this->resultsMobile['general']['resourcesCount'],100,"decrease required",2.25,"$");
+            $output[] = $this->getParamInfo("Mobile Static Resources",$this->resultsMobile['general']['staticResourcesCount'],100,"decrease required",2.25,"$");
+            $output[] = $this->getParamInfo("Mobile JS Resources",$this->resultsMobile['general']['jsResourcesCount'],10,"decrease required",2.25,"$");
+            $output[] = $this->getParamInfo("Mobile CSS Resources",$this->resultsMobile['general']['cssResourcesCount'],10,"decrease required",2.25,"$");
+
+            $output[] = $this->getParamInfo("Mobile Page Weight",$this->resultsMobile['general']['totalBytes'],5*1024*1024,"decrease required",5.25,"$");
+            $output[] = $this->getParamInfo("Mobile HTML Weight",$this->resultsMobile['general']['htmlBytes'],0.5*1024*1024,"decrease required",5.25,"$");
+            $output[] = $this->getParamInfo("Mobile CSS Weight",$this->resultsMobile['general']['cssBytes'],0.5*1024*1024,"decrease required",5.25,"$");
+            $output[] = $this->getParamInfo("Mobile JS Weight",$this->resultsMobile['general']['jsBytes'],0.5*1024*1024,"decrease required",5.25,"$");
+            $output[] = $this->getParamInfo("Mobile Weight",$this->resultsMobile['general']['imageBytes'],1*1024*1024,"decrease required",5.25,"$");
+            $output[] = $this->getParamInfo("Mobile Other Content Weight",$this->resultsMobile['general']['otherBytes'],0.5*1024*1024,"decrease required",5.25,"$");
+            foreach($this->resultsMobile['rules']['ok'] as $key=>$info){
+                $output[]=array('key'=>'Mobile'.str_replace(' ','','Mobile: '.$info['desc']),'name'=>$info['desc'],'price'=>0,'currency'=>'$','comment'=>'-','status'=>'OK');
+            }
+            foreach($this->resultsMobile['rules']['failed'] as $key=>$info){
+                $output[]=array('key'=>'Mobile'.str_replace(' ','',$info['desc']),'name'=>'Mobile: '.$info['desc'],'price'=>2.1,'currency'=>'$','comment'=>'decrease required','status'=>'FAILED');
+            }
+        }
+    }
+    private function getParamInfo($name,$score,$limit,$comment,$price,$curreny){
+        $status = 'OK';
+        if($score<$limit){
+            $price=0;
+            $comment='';
+            $status='FAILED';
+        }
+        return array('key'=>str_replace(' ','',$name),'name'=>$name,'price'=>$price,'currency'=>$curreny,'comment'=>$comment,'status'=>$status);
+    }
     public function toPDF(){
         $fileName = $string = preg_replace("/[^ \w]+/", "", $this->url).'.'.date('YmdH').'.pdf';
         $pdf = new PDFCreator($this->url);
@@ -67,7 +118,7 @@ class InsightsAPI
             $pdf->printTopParam("Total Requests Count",$this->results['general']['resourcesCount'],100,"decrease required");
             $pdf->printTopParam("Static Resources",$this->results['general']['staticResourcesCount'],100,"decrease required");
             $pdf->printTopParam("JS Resources",$this->results['general']['jsResourcesCount'],10,"decrease required");
-            $pdf->printTopParam("CSS Resources",$this->results['general']['cssResourcesCount'],100,"decrease required");
+            $pdf->printTopParam("CSS Resources",$this->results['general']['cssResourcesCount'],10,"decrease required");
             $pdf->Ln();
             $pdf->Ln();
             $pdf->printTopParam("Page Weight",$this->results['general']['totalBytes'],5*1024*1024,"decrease required",true);
