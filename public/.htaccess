@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /
+#RewriteRule ^404 404.html [L]
+RewriteRule ^add add_url.php [L]
+RewriteRule ^stats/u([A-Za-z0-9]+) stats.php?a=$1 [L]
+RewriteRule ^u([A-Za-z0-9]+) index.php?a=$1 [NC]

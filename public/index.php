@@ -1,3 +1,18 @@
+<?php
+ require('config.php');
+//$_SESSION['email']='someone@go.com';
+//$_SESSION['id']=12;
+ $err = '';
+ if(isset($_REQUEST['action']) and ($_REQUEST['action']=='order_upgrade') and isset($_REQUEST['domain']) and !empty($_REQUEST['domain'])){
+    if(isset($_SESSION['email']) and !empty($_SESSION['email'])){
+        $output = Functions::formOrderRequest($_POST,$_SESSION['email']);
+        Functions::sendOrderMain(Constants::$ADMIN_URL,"New Order",$output);
+        $err = "Order created. Our manager will contact you shortly.";
+    }else{
+        $err = "Registration required";
+    }
+ }
+?>
 <!DOCTYPE HTML>
 
 <html>
@@ -31,20 +46,24 @@
 				<nav id="nav">
 					<ul>
 						<li><a href="index.php">Home</a></li>
+                        <?php if(!isset($_SESSION['id'])){ ?>
 						<li>
 							<a href="" class="icon fa-angle-down">Sign IN</a>
 							<ul onclick="event.stopPropagation();" class="menuform">
 								<li>Email:</li>
-								<li><input type="text" class="head_input" id="login" /></li>
+								<li><input type="text" value="" class="head_input" id="loginlogin" /></li>
 								<li>Password</li>
-								<li><input type="password" class="head_input" id="pass" /></li>
-                                <li><a href="#" class="button special fit" style="line-height: 3.5em;margin-top:10px;">Sign In</a></li>
+								<li><input type="password" class="head_input" value="" id="loginpass" /></li>
+                                <li><button onclick="loginUser()" class="button special fit" style="line-height: 3.5em;margin-top:10px;">Sign In</button></li>
 							</ul>
 						</li>
                         <li>
                             <a href="#signup" class="icon ">Sign UP</a>
 
                         </li>
+                        <?php }else{ ?>
+                        <li>Welcome, <?=$_SESSION['email'];?></li>
+                        <?php } ?>
 					</ul>
 				</nav>
 			</header>
@@ -54,55 +73,55 @@
 				<div class="inner"  align="center">
 					<h2>SEOTools</h2>
 					<p>Complex Tool for Site Analytics</p>
+                    <?php if(!isset($_SESSION['id'])){ ?>
+                        <ul class="actions">
+                            <li><a  href="#signup" class="button big ">Free Registration</a></li>
+                        </ul>
+                    <?php }else{ ?>
                     <input type="text" name="test_url" id="test_url" value="" style="width:40%;border:1px solid #fff;color:#fff" placeholder="http://yoursite.com"/><br>
 					<ul class="actions">
 						<li><a id="run_test" href="#" onclick="runTest();" class="button big ">Run Test</a></li>
 					</ul>
+                    <?php } ?>
 				</div>
 			</section>
             <section id="results_container" style="display:none;" class="wrapper style1" >
                 <h2 align="center" >Site Test Results:</h2>
-                <div class="table-wrapper" style="width:80%;margin-left:10%;">
-                    <table class="alt">
-                        <thead>
-                            <tr>
-                                <th>Option</th>
-                                <th width="10%">Result</th>
-                                <th>Comment</th>
-                                <th width="10%">Order</th>
-                            </tr>
-                        </thead>
-                        <tbody id="test_res_container">
-                            <tr>
-                                <td>Option 1</td><td>OK</td><td>-</td><td><input type="checkbox" name="param1" id="param1" checked><label style="margin-bottom: 0px;" for="param1">3.25$</label></td>
-                            </tr>
-                            <tr>
-                                <td>Option 1</td><td>OK</td><td>-</td><td><input type="checkbox" name="param2" id="param2" checked><label style="margin-bottom: 0px;" for="param2">3.25$</label></td>
-                            </tr>
-                            <tr>
-                                <td>Option 1</td><td>OK</td><td>-</td><td><input type="checkbox" name="param3" id="param3" checked><label style="margin-bottom: 0px;" for="param3">3.25$</label></td>
-                            </tr>
-                            <tr>
-                                <td>Option 1</td><td>OK</td><td>-</td><td><input type="checkbox" name="param4" id="param4" checked><label style="margin-bottom: 0px;" for="param4">3.25$</label></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <form  id="order_form" method="POST" action="">
+                    <input style="display:none;" type="hideen" name="action" value="order_upgrade"/>
+                    <input style="display:none;" type="hideen" id="domain_value" name="domain" value=""/>
+                    <div class="table-wrapper" style="width:80%;margin-left:10%;">
+                        <table class="alt">
+                            <thead>
+                                <tr>
+                                    <th>Option</th>
+                                    <th width="10%">Result</th>
+                                    <th>Comment</th>
+                                    <th width="10%">Order</th>
+                                </tr>
+                            </thead>
+                            <tbody id="test_res_container">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
             </section>
+            <?php if(!isset($_SESSION['id'])){ ?>
             <section id="signup" >
                 <div style="width:50%;margin-left:25%;margin-top:40px;"  class="menuform">
                     <h2 align="center">Registration</h2>
                     <div>Email:</div>
-                    <div><input type="text" class="head_input" id="reglogin" /></div>
+                    <div><input type="email" class="head_input" id="reglogin" /></div>
                     <div>Password</div>
                     <div><input type="password" class="head_input" id="regpass" /></div>
                     <div>Password Again</div>
                     <div><input type="password" class="head_input" id="regpass2" /></div>
-                    <div><a href="#" class="button special fit" style="line-height: 3.5em;margin-top:10px;">Sign Up</a></div>
+                    <div><button onclick="createUser();return false;" class="button special fit" style="line-height: 3.5em;margin-top:10px;">Sign Up</button></div>
                 </div>
 
             </section>
-			
+			<?php } ?>
 		<!-- Footer -->
 			<footer id="footer">
 				<ul class="icons">
@@ -119,9 +138,14 @@
 					<li><a href="#">Contact</a></li>
 				</ul>
 				<span class="copyright">
-					&copy; Copyright. All rights reserved. Design by <a href="http://www.html5webtemplates.co.uk">Responsive Web Templates</a>
+					&copy; Copyright. SEOTools</a>
 				</span>
 			</footer>
 
 	</body>
 </html>
+<?php
+if(!empty($err)){ ?>
+<script>alert('<?=$err;?>');</script>
+<?php }
+?>

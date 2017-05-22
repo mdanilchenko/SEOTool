@@ -69,7 +69,7 @@ class InsightsAPI
             $output[] = $this->getParamInfo("Desktop HTML Weight",$this->results['general']['htmlBytes'],0.5*1024*1024,"decrease required",3.25,"$");
             $output[] = $this->getParamInfo("Desktop CSS Weight",$this->results['general']['cssBytes'],0.5*1024*1024,"decrease required",3.25,"$");
             $output[] = $this->getParamInfo("Desktop JS Weight",$this->results['general']['jsBytes'],0.5*1024*1024,"decrease required",3.25,"$");
-            $output[] = $this->getParamInfo("DImages Weight",$this->results['general']['imageBytes'],3*1024*1024,"decrease required",3.25,"$");
+            $output[] = $this->getParamInfo("Desktop Images Weight",$this->results['general']['imageBytes'],3*1024*1024,"decrease required",3.25,"$");
             $output[] = $this->getParamInfo("Desktop Other Content Weight",$this->results['general']['otherBytes'],0.5*1024*1024,"decrease required",3.25,"$");
             foreach($this->results['rules']['ok'] as $key=>$info){
                 $output[]=array('key'=>'Desktop'.str_replace(' ','',$info['desc']),'name'=>$info['desc'],'price'=>0,'currency'=>'$','comment'=>'-','status'=>'OK');
@@ -98,15 +98,17 @@ class InsightsAPI
                 $output[]=array('key'=>'Mobile'.str_replace(' ','',$info['desc']),'name'=>'Mobile: '.$info['desc'],'price'=>2.1,'currency'=>'$','comment'=>'decrease required','status'=>'FAILED');
             }
         }
+        return $output;
     }
     private function getParamInfo($name,$score,$limit,$comment,$price,$curreny){
-        $status = 'OK';
+        $outStat = 'FAILED';
+        $status = $score.' ('.$comment.')';
         if($score<$limit){
             $price=0;
-            $comment='';
-            $status='FAILED';
+            $status=$score;
+            $outStat = 'OK';
         }
-        return array('key'=>str_replace(' ','',$name),'name'=>$name,'price'=>$price,'currency'=>$curreny,'comment'=>$comment,'status'=>$status);
+        return array('key'=>str_replace(' ','',$name),'name'=>$name,'price'=>$price,'currency'=>$curreny,'comment'=>$status,'status'=>$outStat);
     }
     public function toPDF(){
         $fileName = $string = preg_replace("/[^ \w]+/", "", $this->url).'.'.date('YmdH').'.pdf';

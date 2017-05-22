@@ -154,6 +154,7 @@ function runTest(){
 	if(testAjax==null) {
         $('#results_container').slideUp();
         $('#run_test').html('Running...');
+        $('#domain_value').val($('#test_url').val());
         testAjax = $.ajax({
             url: "api.php",
             type:"POST",
@@ -170,13 +171,15 @@ function runTest(){
                 	for(var i=0;i<data.rates.length;i++){
                 		var box = '';
                 		if(data.rates[i].price>0){
-                			box = '<input type="checkbox" name="'+data.rates[i].key+'" value="'+data.rates[i].price+'" id="'+data.rates[i].key+'" checked><label style="margin-bottom: 0px;" for="'+data.rates[i].key+'">'+data.rates[i].price+data.rates[i].currency+'$</label>';
+                			box = '<input type="checkbox" onchange="recalculateTotal(\'.test_result_input\',\'#upgrades_total\')" class="test_result_input" name="'+data.rates[i].key+'" value="'+data.rates[i].price+'" id="'+data.rates[i].key+'" checked><label style="margin-bottom: 0px;" for="'+data.rates[i].key+'">'+data.rates[i].price+data.rates[i].currency+'</label>';
 						}
                 		var option = '<tr><td>'+data.rates[i].name+'</td><td>'+data.rates[i].status+'</td><td>'+data.rates[i].comment+'</td><td>'+box+'</td> </tr>';
                         $('#test_res_container').append(option);
 					}
 					$('#results_container').slideDown();
 				}
+                $('#test_res_container').append('<br><button onclick="$(\'#order_form\').submit();" class="button special fit">ORDER UPGRADES for <span id="upgrades_total"></span>$</button>');
+                recalculateTotal('.test_result_input','#upgrades_total');
             },
             error: function () {
                 $('#run_test').html('Run Test');
@@ -185,6 +188,53 @@ function runTest(){
         });
     }
 }
+function recalculateTotal(selector,target){
+	var total = 0;
+	$(selector+':checked').each(function(){
+		total+=parseFloat($(this).val());
+	});
+	$(target).html(Math.round(total*100)/100);
+}
 function showError(msg) {
 	alert(msg);
+}
+function createUser(){
+    $.ajax({
+        url: "api.php",
+        type: "POST",
+        dataType: "json",
+        data: {action: "register", email: $('#reglogin').val(), pass: $('#regpass').val(), pass2: $('#regpass2').val()},
+        success: function (data) {
+			if(data.status==0){
+				location.reload(); return;
+			}
+            if(typeof data.error !== "undefined"){
+                showError(data.error);
+            }
+
+        },
+        error: function () {
+        	showError("Check your Internec connection");
+        }
+    });
+}
+function loginUser(){
+    $.ajax({
+        url: "api.php",
+        type: "POST",
+        dataType: "json",
+        data: {action: "login", login: $('#loginlogin').val(), pass: $('#loginpass').val()},
+        success: function (data) {
+            if(data.status==0){
+                location.reload(); return;
+            }
+            if(typeof data.error !== "undefined"){
+                showError(data.error);
+            }
+
+        },
+        error: function () {
+            showError("Check your Internec connection");
+        }
+    });
 }

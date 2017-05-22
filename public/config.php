@@ -1,6 +1,6 @@
 <?php
 session_start();
-define("MAIN_DOMAIN","/home/maksim/PhpstormProjects/SEOTool/");
+define("MAIN_DOMAIN","/home/runaway/public_html/shortlink/seotool/public/");
 
 function autoloader($class) {
     if(file_exists($class.'.php')){
