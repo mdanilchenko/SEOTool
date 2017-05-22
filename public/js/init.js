@@ -178,7 +178,7 @@ function runTest(){
 					}
 					$('#results_container').slideDown();
 				}
-                $('#test_res_container').append('<br><button onclick="$(\'#order_form\').submit();" class="button special fit">ORDER UPGRADES for <span id="upgrades_total"></span>$</button>');
+                $('#test_res_container').append('<br><button onclick="$(\'#order_form\').submit();" class="button special fit">ORDER UPGRADES for <span id="upgrades_total"></span>$</button><a href="'+data.pdf+'" >PDF report</a>');
                 recalculateTotal('.test_result_input','#upgrades_total');
             },
             error: function () {
@@ -219,11 +219,11 @@ function createUser(){
     });
 }
 function loginUser(){
-    $.ajax({
+	$.ajax({
         url: "api.php",
         type: "POST",
         dataType: "json",
-        data: {action: "login", login: $('#loginlogin').val(), pass: $('#loginpass').val()},
+        data: {action: "login", login: $("input[name='loginlogin']").last().val(), pass: $("input[name='loginpass']").last().val()},
         success: function (data) {
             if(data.status==0){
                 location.reload(); return;

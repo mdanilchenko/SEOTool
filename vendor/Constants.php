@@ -7,8 +7,8 @@ class Constants
     public static $API_URL = 'https://www.googleapis.com/pagespeedonline/v2/runPagespeed?url=%URL%&strategy=%TYPE%&key=%KEY%&locale=en';
     public static $PDF_SAVE_PATH = 'pdfreports/';
 
-    public static $DB_HOST="localhost";
-    public static $DB_NAME="localhost";
+    public static $DB_HOST="127.0.0.1";
+    public static $DB_NAME="runaway_test";
     public static $DB_USER="runaway_seotool";
     public static $DB_PASS="FHWDUIFEUi33f3fsefrg";
 

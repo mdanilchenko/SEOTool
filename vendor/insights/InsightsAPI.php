@@ -163,7 +163,7 @@ class InsightsAPI
         }
 
         $pdf->Output('F',MAIN_DOMAIN.Constants::$PDF_SAVE_PATH.$fileName);
-        return true;
+        return $fileName;
     }
     public function checkReportCache(){
         $fileName = $string = preg_replace("/[^ \w]+/", "", $this->url).'.'.date('YmdH').'.pdf';

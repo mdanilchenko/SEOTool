@@ -1,7 +1,5 @@
 <?php
  require('config.php');
-//$_SESSION['email']='someone@go.com';
-//$_SESSION['id']=12;
  $err = '';
  if(isset($_REQUEST['action']) and ($_REQUEST['action']=='order_upgrade') and isset($_REQUEST['domain']) and !empty($_REQUEST['domain'])){
     if(isset($_SESSION['email']) and !empty($_SESSION['email'])){
@@ -46,14 +44,12 @@
 				<nav id="nav">
 					<ul>
 						<li><a href="index.php">Home</a></li>
-                        <?php if(!isset($_SESSION['id'])){ ?>
+                        <?php if(!isset($_SESSION['email'])){ ?>
 						<li>
-							<a href="" class="icon fa-angle-down">Sign IN</a>
-							<ul onclick="event.stopPropagation();" class="menuform">
-								<li>Email:</li>
-								<li><input type="text" value="" class="head_input" id="loginlogin" /></li>
-								<li>Password</li>
-								<li><input type="password" class="head_input" value="" id="loginpass" /></li>
+							<a href=""  class="icon fa-angle-down">Sign IN</a>
+							<ul id="submenu" style="display:none;" onclick="event.stopPropagation();" class="menuform">
+								<li><input type="text" placeholder="Email" name="loginlogin" value="" class="head_input" id="loginlogin" /></li>
+								<li><input type="password" placeholder="Password" name="loginpass" class="head_input" value="" id="loginpass" /></li>
                                 <li><button onclick="loginUser()" class="button special fit" style="line-height: 3.5em;margin-top:10px;">Sign In</button></li>
 							</ul>
 						</li>
@@ -63,6 +59,7 @@
                         </li>
                         <?php }else{ ?>
                         <li>Welcome, <?=$_SESSION['email'];?></li>
+                            <li><a href="?logout" >Logout</a></li>
                         <?php } ?>
 					</ul>
 				</nav>
@@ -73,7 +70,7 @@
 				<div class="inner"  align="center">
 					<h2>SEOTools</h2>
 					<p>Complex Tool for Site Analytics</p>
-                    <?php if(!isset($_SESSION['id'])){ ?>
+                    <?php if(!isset($_SESSION['email'])){ ?>
                         <ul class="actions">
                             <li><a  href="#signup" class="button big ">Free Registration</a></li>
                         </ul>
@@ -107,7 +104,7 @@
                     </div>
                 </form>
             </section>
-            <?php if(!isset($_SESSION['id'])){ ?>
+            <?php if(!isset($_SESSION['email'])){ ?>
             <section id="signup" >
                 <div style="width:50%;margin-left:25%;margin-top:40px;"  class="menuform">
                     <h2 align="center">Registration</h2>
