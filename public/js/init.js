@@ -155,6 +155,7 @@ function runTest(){
         $('#results_container').slideUp();
         $('#run_test').html('Running...');
         $('#domain_value').val($('#test_url').val());
+        var host = extractHostname($('#test_url').val())
         testAjax = $.ajax({
             url: "api.php",
             type:"POST",
@@ -168,9 +169,11 @@ function runTest(){
 				}
 				if(typeof data.rates!=="undefined"){
                 	$('#test_res_container').empty();
+                    var option = '<tr><td>Yandex Rating</td><td><img src="http://yandex.ru/cycounter?'+host+'"/></td><td></td><td><input type="checkbox" onchange="recalculateTotal(\'.test_result_input\',\'#upgrades_total\')" class="test_result_input" name="YandexTic" value="50" id="YandexTic" checked><label style="margin-bottom: 0px;" for="YandexTic"> 50$ and up</label></td> </tr>';
+                    $('#test_res_container').append(option);
                 	for(var i=0;i<data.rates.length;i++){
                 		var box = '';
-                		if(data.rates[i].price>0){
+                		if((data.rates[i].price>0) || (typeof data.rates[i].price === "string")){
                 			box = '<input type="checkbox" onchange="recalculateTotal(\'.test_result_input\',\'#upgrades_total\')" class="test_result_input" name="'+data.rates[i].key+'" value="'+data.rates[i].price+'" id="'+data.rates[i].key+'" checked><label style="margin-bottom: 0px;" for="'+data.rates[i].key+'">'+data.rates[i].price+data.rates[i].currency+'</label>';
 						}
                 		var option = '<tr><td>'+data.rates[i].name+'</td><td>'+data.rates[i].status+'</td><td>'+data.rates[i].comment+'</td><td>'+box+'</td> </tr>';
@@ -237,4 +240,22 @@ function loginUser(){
             showError("Check your Internec connection");
         }
     });
+}
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
 }

@@ -3,6 +3,7 @@
 class InsightsAPI
 {
     private $url;           //URL to test
+    private $commonStats;
     private $results;       //results storage
     private $resultsMobile;       //results storage
 
@@ -10,6 +11,19 @@ class InsightsAPI
     public function run(){
         $this->results = $this->getStats('desktop');
         $this->resultsMobile = $this->getStats('mobile');
+        $this->commonStats = array();
+        $parts = parse_url ($this->url);
+        if($inf = file_get_contents('http://a10.seogadget.ru/ajax/prcy/pr/url/'.$parts['host'])){
+            $info = json_decode($inf,true);
+            if(isset($info['pr'])){
+                $this->commonStats[] = array('key'=>'GooglePr','name'=>'Google PR','status'=>$info['pr'],'comment'=>'','price'=>50,'currency'=>"$ and up");
+            }
+        }
+        $this->commonStats[] = array('key'=>'TextUniq','name'=>'Check Text','status'=>'<a href="https://text.ru/" target="_blank"> here</a>','comment'=>'','price'=>20,'currency'=>"$ and up");
+        $this->commonStats[] = array('key'=>'BrokenLinks','name'=>'Check Broken Links','status'=>'<a href="https://www.screamingfrog.co.uk/seo-spider/" target="_blank"> here</a>','comment'=>'','price'=>2,'currency'=>"$ and up");
+        $this->commonStats[] = array('key'=>'LoadTest','name'=>'Load Test','status'=>'<a href="https://loadimpact.com/" target="_blank"> here</a>','comment'=>'','price'=>22,'currency'=>"$ and up");
+
+
         if(($this->results!==FALSE) and ($this->resultsMobile!==FALSE)){
             return TRUE;
         }
@@ -59,6 +73,9 @@ class InsightsAPI
     }
     public function toObject(){
         $output = array();
+        if($this->commonStats!==FALSE){
+            $output = $this->commonStats;
+        }
         if($this->results!==FALSE){
             $output[] = $this->getParamInfo("Desktop Total Requests Count",$this->results['general']['resourcesCount'],100,"decrease required",3.25,"$");
             $output[] = $this->getParamInfo("Desktop Static Resources",$this->results['general']['staticResourcesCount'],100,"decrease required",3.25,"$");

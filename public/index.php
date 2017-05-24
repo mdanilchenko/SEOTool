@@ -94,7 +94,7 @@
                                     <th>Option</th>
                                     <th width="10%">Result</th>
                                     <th>Comment</th>
-                                    <th width="10%">Order</th>
+                                    <th width="20%">Order</th>
                                 </tr>
                             </thead>
                             <tbody id="test_res_container">
